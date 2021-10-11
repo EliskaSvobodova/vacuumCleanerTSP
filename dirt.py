@@ -18,3 +18,12 @@ class DirtPair:
         self.id1 = id1
         self.id2 = id2
         self.distance = distance
+
+    def __eq__(self, other):
+        if isinstance(other, DirtPair):
+            return (self.id1 == other.id1 and self.id2 == other.id2) \
+                   or (self.id1 == other.id2 and self.id2 == other.id1)
+        return False
+
+    def __hash__(self):
+        return hash(f"{min(self.id1, self.id2)}, {max(self.id1, self.id2)}")
