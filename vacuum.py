@@ -103,6 +103,8 @@ class Vacuum:
         heapq.heapify(q)
         while len(q) > 0 and len(m.dirt_locations) > 0:
             cur = heapq.heappop(q)
+            if cur.item.x == 5 and cur.item.y == 9:
+                print()
             if cur.item.dirt_id is not None:
                 dirt = m.vacuum_dirt(cur.item.x, cur.item.y)
                 return dirt, self.construct_path(cur.item, m_orig)
@@ -115,6 +117,8 @@ class Vacuum:
                         elem.item.from_start = from_start
                         elem.item.heuristic = heuristic
                         elem.item.parent = cur.item
+                        elem.priority = from_start + heuristic
+            heapq.heapify(q)
             for n in m.neighbors(cur.item.x, cur.item.y):
                 n.from_start = cur.item.from_start + 1
                 n.heuristic = cost_min_spanning_tree(m, n.x, n.y)
