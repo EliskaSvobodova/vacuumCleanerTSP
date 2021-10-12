@@ -15,7 +15,7 @@ def solve_map(filename):
 
 
 if __name__ == '__main__':
-    m, path = solve_map('maps/b1')
+    m, path = solve_map('maps/b1')  # TODO: change map number
     draw_m = []
     for row in m.maze:
         r = []

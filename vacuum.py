@@ -53,6 +53,9 @@ class BushNode:
 
 
 def cost_min_spanning_tree(m, x, y) -> int:
+    """
+    Calculate the cost of the minimal spanning tree including the specified point with Kruskal algorithm
+    """
     dirt_paths = deepcopy(m.dirt_paths)
     dirt_paths.extend(paths_to_dirt(m, x, y, -1))
     dirt_paths = sorted(dirt_paths, key=lambda d: d.distance)
@@ -81,6 +84,11 @@ class Vacuum:
         self.y = start_y
 
     def vacuum_all_dirt(self, m_orig: Map):
+        """
+        Vacuum all dirt one by one
+
+        Pick the next dirt with A* with min spanning tree heuristic
+        """
         found_dirt = []
         path = []
         while len(found_dirt) < len(m_orig.dirt_locations):
@@ -92,6 +100,9 @@ class Vacuum:
         return path
 
     def to_next_dirt(self, m_orig: Map, found_dirt: List[Dirt]):
+        """
+        Find path to the most suitable dirt, according to the shortest path and min spanning tree heuristic
+        """
         m = deepcopy(m_orig)
         for f_d in found_dirt:
             m.vacuum_dirt(f_d.x, f_d.y)
@@ -103,8 +114,6 @@ class Vacuum:
         heapq.heapify(q)
         while len(q) > 0 and len(m.dirt_locations) > 0:
             cur = heapq.heappop(q)
-            if cur.item.x == 5 and cur.item.y == 9:
-                print()
             if cur.item.dirt_id is not None:
                 dirt = m.vacuum_dirt(cur.item.x, cur.item.y)
                 return dirt, self.construct_path(cur.item, m_orig)
