@@ -17,7 +17,7 @@ def paths_to_dirt(m_orig, start_x, start_y, start_id):
     dirt_paths = []
     dirt_found = 0
     while len(q) > 0 and dirt_found < len(m.dirt_locations):
-        cur = q.pop()
+        cur = q.pop(0)
         cur_id = m.at(cur.x, cur.y).dirt_id
         if cur_id is not None and cur_id != m.at(start_x, start_y).dirt_id:
             dirt_paths.append(DirtPair(start_id, m.at(cur.x, cur.y).dirt_id, cur.dist))
@@ -25,7 +25,7 @@ def paths_to_dirt(m_orig, start_x, start_y, start_id):
         for n in m.neighbors(cur.x, cur.y):
             n.state = TileState.opened
             q.append(QElem(n.x, n.y, cur.dist + 1))
-        cur.state = TileState.closed
+        m.at(cur.x, cur.y).state = TileState.closed
     return dirt_paths
 
 

@@ -4,7 +4,7 @@ from enum import Enum, auto
 from typing import List
 
 from dirt import Dirt
-from map import Map
+from map import Map, paths_to_dirt
 import heapq
 
 from tiles import Tile, TileState
@@ -34,8 +34,45 @@ class PathPart:
         return f"({self.x}, {self.y}): {self.action.name}"
 
 
+class Edge:
+    def __init__(self, src_node, dest_node, weight):
+        self.src_node = src_node
+        self.dest_node = dest_node
+        self.weight = weight
+
+
+class BushNode:
+    def __init__(self, parent, rank):
+        self.parent = parent
+        self.rank = rank
+
+    def find_parent(self, node):
+        if node.parent is None:
+            return node
+        return self.find_parent(node.parent)
+
+
 def cost_min_spanning_tree(m, x, y) -> int:
-    return 0
+    dirt_paths = deepcopy(m.dirt_paths)
+    dirt_paths.extend(paths_to_dirt(m, x, y, -1))
+    dirt_paths = sorted(dirt_paths, key=lambda d: d.distance)
+    bushes = {d.dirt_id: BushNode(None, 0) for d in sorted(m.dirt_locations, key=lambda dirt: dirt.dirt_id)}
+    bushes[-1] = BushNode(None, 0)
+    span_tree = []
+    for d_p in dirt_paths:
+        u, v = bushes[d_p.id1], bushes[d_p.id2]
+        parent_u, parent_v = u.find_parent(u), v.find_parent(v)
+        if parent_u != parent_v:
+            span_tree.append(d_p)
+            if parent_u.rank < parent_v.rank:
+                parent_u.parent = parent_v
+                parent_v.rank = max(parent_v.rank, parent_u.rank + 1)
+            else:
+                parent_v.parent = parent_u
+                parent_u.rank = max(parent_u.rank, parent_v.rank + 1)
+        if len(span_tree) == len(m.dirt_locations):
+            break
+    return sum(edge.distance for edge in span_tree)
 
 
 class Vacuum:
